@@ -44,6 +44,20 @@ public class ProductService {
     }
 
 
+    public void updateProduct(Integer productId, Product updatedProduct) {
+        Optional<Product> existingProductOptional = productRepository.findById(productId);
 
+        if (existingProductOptional.isPresent()) {
+            Product existingProduct = existingProductOptional.get();
 
+            // Update the fields of the existing product with the values from the updated product
+            existingProduct.setName(updatedProduct.getName());
+            existingProduct.setPrice(updatedProduct.getPrice());
+
+            // Save the updated product
+            productRepository.save(existingProduct);
+        } else {
+            throw new ProductNotFoundException("Product not found with id: " + productId);
+        }
+    }
 }

@@ -83,13 +83,91 @@ function getOrders() {
                         </ul>
                     </td>
                     <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteOrderById(${order.id})">Delete</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteOrderById(${order.id})">Delete</button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="updateProduct(${product.id})">Edit</button>
                     </td>
                 `;
         orderList.appendChild(row);
       });
     })
     .catch((error) => console.error("Error fetching orders:", error));
+}
+
+function getProductList() {
+  fetch("https://app-sme2.onrender.com/products")
+    .then((response) => response.json())
+    .then((products) => {
+      const productList = document.getElementById("productList");
+      productList.innerHTML = "";
+
+      products.forEach((product) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.order.customerName}</td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteProductById(${product.id})">Delete</button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="updateProduct(${product.id})">Edit</button>
+                    </td>
+                `;
+        productList.appendChild(row);
+      });
+    })
+    .catch((error) => console.error("Error fetching products:", error));
+}
+function updateProduct(productId, updatedProduct) {
+  // Define the endpoint URL
+  const apiUrl = `https://app-sme2.onrender.com//products/updateProduct/${productId}`;
+
+  // Make a PUT request
+  fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedProduct),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Handle the successful response
+      console.log('Product updated successfully:', data);
+    })
+    .catch(error => {
+      // Handle errors
+      console.error('Error updating product:', error);
+    });
+}
+
+function deleteProductById(productId) {
+  fetch(`https://app-sme2.onrender.com/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else if (response.status === 404) {
+        throw new Error("Product not found");
+      } else {
+        throw new Error("Error deleting order");
+      }
+    })
+    .then((message) => {
+      console.log(message); // Log success message
+      alert(message);
+      // Refresh the order list
+      getProductList();
+    })
+    .catch((error) => console.error("Error:", error));
 }
 
 function getProducts() {
@@ -152,6 +230,7 @@ function getProducts() {
 
 getProducts();
 getOrders();
+getProductList();
 
 // Function to show/hide sections based on route
 function navigateTo(route) {
