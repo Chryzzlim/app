@@ -133,6 +133,32 @@
           </table>
         </div>
       </section>
+
+        <!-- Add this modal in your HTML file -->
+        <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editOrderModalLabel">Edit Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form fields for editing order details -->
+                        <form id="editOrderForm">
+                            <!-- Add form fields for editing order details, e.g., customerName, totalPrice, etc. -->
+                            <div class="mb-3">
+                                <label for="editCustomerName" class="form-label">Customer Name</label>
+                                <input type="text" class="form-control" id="editCustomerName" required>
+                            </div>
+                            <!-- Add other form fields as needed -->
+
+                            <button type="button" class="btn btn-primary" onclick="saveEditedOrder()">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Add Bootstrap JS and Popper.js scripts -->

@@ -1,5 +1,5 @@
 // app.js
-
+// CRUD FUNCTIONS FOR ORDER
 // Function to create a new order
 function createOrder() {
   const customerName = document.getElementById("customerName").value;
@@ -37,6 +37,100 @@ function createOrder() {
     .catch((error) => console.error("Error creating order:", error));
 }
 
+function getOrders() {
+  fetch("https://app-sme2.onrender.com/orders")
+    .then((response) => response.json())
+    .then((orders) => {
+      const orderList = document.getElementById("orderList");
+      orderList.innerHTML = "";
+
+      orders.forEach((order) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customerName}</td>
+                    <td>${order.totalPrice}</td>
+                    <td>${order.isMeetup ? "Yes" : "No"}</td>
+                    <td>${order.isPaid ? "Yes" : "No"}</td>
+                    <td>
+                        <ul>
+                            ${order.products.map((product) => `<li>${product.name} - ${product.price}</li>`).join("")}
+                        </ul>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteOrderById(${order.id})">Delete</button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="updateOrder(${order.id})">Edit</button>
+                    </td>
+                `;
+        orderList.appendChild(row);
+      });
+    })
+    .catch((error) => console.error("Error fetching orders:", error));
+}
+
+
+
+// Modify your updateOrder function to open the modal and populate its fields
+function updateOrder(orderId) {
+  // Fetch the details of the specific order using orderId
+  fetch(`https://app-sme2.onrender.com/orders/${orderId}`)
+    .then((response) => response.json())
+    .then((order) => {
+    
+    console.log("Order: ", customerName);
+      // Populate the modal fields with the order details
+      document.getElementById("editCustomerName").value = order.customerName;
+      document.getElementById("editTotalPrice").value=order.totalPrice;
+      document.getElementById("editMeetup").value=order.isMeetup;
+      document.getElementById("editPaid").value=order.isPaid;
+      document.getElementById("editProducts").
+      // Populate other fields as needed
+
+      // Open the modal
+      $("#editOrderModal").modal("show");
+    })
+    .catch((error) => console.error("Error fetching order details:", error));
+}
+
+// Add a function to save the edited order
+function saveEditedOrder() {
+  // Fetch the orderId from the modal or pass it as an argument
+  const orderId = document.getElementById("editOrderId").value;
+
+  // Get the updated values from the modal fields
+  const updatedCustomerName = document.getElementById("editCustomerName").value;
+  // Get other updated values as needed
+
+  // Construct the updated order object
+  const updatedOrder = {
+    customerName: updatedCustomerName,
+    // Include other updated fields
+  };
+
+  // Perform the update using a PUT request
+  fetch(`https://app-sme2.onrender.com/orders/${orderId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedOrder),
+  })
+    .then((response) => {
+      if (response.ok) {
+        // Order updated successfully
+        // Close the modal
+        $("#editOrderModal").modal("hide");
+
+        // Refresh the order list or perform other actions as needed
+        getOrders();
+      } else {
+        console.error("Error updating order");
+      }
+    })
+    .catch((error) => console.error("Error updating order:", error));
+}
+
+
 function deleteOrderById(orderId) {
   fetch(`https://app-sme2.onrender.com/orders/${orderId}`, {
     method: "DELETE",
@@ -62,35 +156,34 @@ function deleteOrderById(orderId) {
     .catch((error) => console.error("Error:", error));
 }
 
-function getOrders() {
-  fetch("https://app-sme2.onrender.com/orders")
-    .then((response) => response.json())
-    .then((orders) => {
-      const orderList = document.getElementById("orderList");
-      orderList.innerHTML = "";
+// CRUD FUNCTIONS FOR PRODUCTS
 
-      orders.forEach((order) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${order.customerName}</td>
-                    <td>${order.totalPrice}</td>
-                    <td>${order.isMeetup ? "Yes" : "No"}</td>
-                    <td>${order.isPaid ? "Yes" : "No"}</td>
-                    <td>
-                        <ul>
-                            ${order.products.map((product) => `<li>${product.name} - ${product.price}</li>`).join("")}
-                        </ul>
-                    </td>
-                    <td>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteOrderById(${order.id})">Delete</button>
-                        <button class="btn btn-outline-warning btn-sm" onclick="updateProduct(${product.id})">Edit</button>
-                    </td>
-                `;
-        orderList.appendChild(row);
-      });
+function createProduct(newProduct) {
+  // Define the endpoint URL
+  const apiUrl = 'https://app-sme2.onrender.com/products/saveProduct';
+
+  // Make a POST request
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newProduct),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
     })
-    .catch((error) => console.error("Error fetching orders:", error));
+    .then(data => {
+      // Handle the successful response
+      console.log('Product created successfully:', data);
+    })
+    .catch(error => {
+      // Handle errors
+      console.error('Error creating product:', error);
+    });
 }
 
 function getProductList() {
@@ -116,58 +209,6 @@ function getProductList() {
       });
     })
     .catch((error) => console.error("Error fetching products:", error));
-}
-function updateProduct(productId, updatedProduct) {
-  // Define the endpoint URL
-  const apiUrl = `https://app-sme2.onrender.com//products/updateProduct/${productId}`;
-
-  // Make a PUT request
-  fetch(apiUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatedProduct),
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      // Handle the successful response
-      console.log('Product updated successfully:', data);
-    })
-    .catch(error => {
-      // Handle errors
-      console.error('Error updating product:', error);
-    });
-}
-
-function deleteProductById(productId) {
-  fetch(`https://app-sme2.onrender.com/products/${productId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.text();
-      } else if (response.status === 404) {
-        throw new Error("Product not found");
-      } else {
-        throw new Error("Error deleting order");
-      }
-    })
-    .then((message) => {
-      console.log(message); // Log success message
-      alert(message);
-      // Refresh the order list
-      getProductList();
-    })
-    .catch((error) => console.error("Error:", error));
 }
 
 function getProducts() {
@@ -225,6 +266,61 @@ function getProducts() {
     })
     .catch((error) => console.error("Error fetching products:", error));
 }
+
+function updateProduct(productId, updatedProduct) {
+  // Define the endpoint URL
+  const apiUrl = `https://app-sme2.onrender.com/products/updateProduct/${productId}`;
+
+  // Make a PUT request
+  fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedProduct),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Handle the successful response
+      console.log('Product updated successfully:', data);
+    })
+    .catch(error => {
+      // Handle errors
+      console.error('Error updating product:', error);
+    });
+}
+
+function deleteProductById(productId) {
+  fetch(`https://app-sme2.onrender.com/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else if (response.status === 404) {
+        throw new Error("Product not found");
+      } else {
+        throw new Error("Error deleting order");
+      }
+    })
+    .then((message) => {
+      console.log(message); // Log success message
+      alert(message);
+      // Refresh the order list
+      getProductList();
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+
 
 // Initial load of orders and products
 
