@@ -16,7 +16,7 @@ function createOrder() {
   // Construct the query parameter string for productIds
   const productIdsQueryParam = productIds.map((id) => `productIds=${id}`).join("&");
 
-  fetch(`http://localhost:8080/orders/createOrder?${productIdsQueryParam}`, {
+  fetch(`https://app-sme2.onrender.com/orders/createOrder?${productIdsQueryParam}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +38,7 @@ function createOrder() {
 }
 
 function deleteOrderById(orderId) {
-  fetch(`http://localhost:8080/orders/${orderId}`, {
+  fetch(`https://app-sme2.onrender.com/orders/${orderId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -63,7 +63,7 @@ function deleteOrderById(orderId) {
 }
 
 function getOrders() {
-  fetch("http://localhost:8080/orders")
+  fetch("https://app-sme2.onrender.com/orders")
     .then((response) => response.json())
     .then((orders) => {
       const orderList = document.getElementById("orderList");
@@ -93,7 +93,7 @@ function getOrders() {
 }
 
 function getProducts() {
-  fetch("http://localhost:8080/products")
+  fetch("https://app-sme2.onrender.com/products")
     .then((response) => response.json())
     .then((products) => {
       const productCheckboxList = document.getElementById("productCheckboxList");
