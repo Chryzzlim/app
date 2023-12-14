@@ -1,6 +1,7 @@
 package com.javabe.springbootbackend.service;
 
 import com.javabe.springbootbackend.exceptions.OrderNotFoundException;
+import com.javabe.springbootbackend.exceptions.ProductNotFoundException;
 import com.javabe.springbootbackend.model.Order;
 import com.javabe.springbootbackend.model.Product;
 import com.javabe.springbootbackend.repository.OrderRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -23,6 +25,11 @@ public class OrderService {
 
     public List<Order> getAllOrders(){
         return orderRepository.findAll();
+    }
+
+    public Order findById(Integer orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + orderId));
     }
 
     public void createOrder(Order order, List<Integer> productIds) {
@@ -71,5 +78,25 @@ public class OrderService {
 
     public List<Order> getOrdersByTotalPriceGreaterThan(Double totalPriceGreaterThan) {
         return orderRepository.findByTotalPriceGreaterThan(totalPriceGreaterThan);
+    }
+
+    public void updateOrder(Integer orderId, Order updatedOrder) {
+        Optional<Order> existingOrderOptional = orderRepository.findById(orderId);
+
+        if (existingOrderOptional.isPresent()) {
+            Order existingOrder = existingOrderOptional.get();
+
+            // Update the fields of the existing product with the values from the updated product
+            existingOrder.setCustomerName(updatedOrder.getCustomerName());
+            existingOrder.setTotalPrice(updatedOrder.getTotalPrice());
+            existingOrder.setIsMeetup(updatedOrder.getIsMeetup());
+            existingOrder.setIsPaid(updatedOrder.getIsPaid());
+            existingOrder.setCustomerName(updatedOrder.getCustomerName());
+
+            // Save the updated product
+            orderRepository.save(existingOrder);
+        } else {
+            throw new ProductNotFoundException("Product not found with id: " + orderId);
+        }
     }
 }

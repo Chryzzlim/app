@@ -1,7 +1,9 @@
 package com.javabe.springbootbackend.service;
 
 import com.javabe.springbootbackend.exceptions.ProductNotFoundException;
+import com.javabe.springbootbackend.model.Order;
 import com.javabe.springbootbackend.model.Product;
+import com.javabe.springbootbackend.repository.OrderRepository;
 import com.javabe.springbootbackend.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     public List<Product> getAllProducts(){
         return productRepository.findAll();
@@ -49,13 +54,25 @@ public class ProductService {
 
         if (existingProductOptional.isPresent()) {
             Product existingProduct = existingProductOptional.get();
-
             // Update the fields of the existing product with the values from the updated product
             existingProduct.setName(updatedProduct.getName());
             existingProduct.setPrice(updatedProduct.getPrice());
 
             // Save the updated product
             productRepository.save(existingProduct);
+
+            Order order= existingProduct.getOrder();
+            if (order != null) {
+                double totalOrderPrice = order.getProducts().stream()
+                        .mapToDouble(Product::getPrice)
+                        .sum();
+
+                // Set the recalculated total price for the order
+                order.setTotalPrice(totalOrderPrice);
+
+                // Save the updated order
+                orderRepository.save(order);
+            }
         } else {
             throw new ProductNotFoundException("Product not found with id: " + productId);
         }

@@ -1,6 +1,7 @@
 package com.javabe.springbootbackend.controller;
 
 import com.javabe.springbootbackend.exceptions.OrderNotFoundException;
+import com.javabe.springbootbackend.exceptions.ProductNotFoundException;
 import com.javabe.springbootbackend.model.Order;
 import com.javabe.springbootbackend.model.Product;
 import com.javabe.springbootbackend.repository.OrderRepository;
@@ -12,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
@@ -35,6 +39,32 @@ public class OrderController {
         } catch (Exception e) {
             // Handle the exception appropriately
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order");
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable Integer orderId){
+        try {
+            Order order = orderService.findById(orderId);
+            return ResponseEntity.ok(order);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    @PutMapping("/updateOrder/{orderId}")
+    public ResponseEntity<Map<String, String>> updateProduct(@PathVariable Integer orderId, @RequestBody Order updatedOrder) {
+        try {
+            orderService.updateOrder(orderId, updatedOrder);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Product updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Product not found"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "Error updating product"));
         }
     }
 

@@ -27,6 +27,38 @@
     .product-checkbox:checked {
       background-color: #957dad;
     }
+    /* Add this to your CSS */
+    .custom-table {
+      background-color: #efc3ca;
+      border: 2px solid #957dad;
+      cursor: pointer;
+    }
+
+    .custom-table th,
+    .custom-table td {
+      color: #957dad;
+    }
+
+    .custom-table th,
+    .custom-table td {
+      text-align: center;
+    }
+
+    .custom-table thead th {
+      background-color: #efc3ca;
+    }
+        .create-product-btn {
+    margin-bottom: 20px; /* Adjust the margin to control the space between the button and the table */
+    font-size: 18px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .create-product-btn:hover {
+    background-color: #007bff; /* Change the color on hover to make it stand out */
+    color: #fff; /* Adjust text color for better visibility on hover */
+  }
   </style>
   <body>
     <!--Add Navigation Bar-->
@@ -95,10 +127,10 @@
       </section>
 
       <!-- Order List as a table -->
-      <section id="orderListSection" style="display: none">
+      <section id="orderListSection" style="display: none; text-align: center">
         <h2>Order List</h2>
         <div class="table-responsive">
-          <table class="table table-bordered table-danger table-hover">
+          <table class="table table-bordered table-hover custom-table mx-auto">
             <thead>
               <tr>
                 <th>Order ID</th>
@@ -113,13 +145,56 @@
             <tbody id="orderList"></tbody>
           </table>
         </div>
+
+        <div class="modal fade" id="eOrderModal" tabindex="-1" aria-labelledby="eOrderModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="eOrderModalLabel">Edit Order</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="orderForm">
+                  <div class="mb-3">
+                    <label for="orderId" class="form-label">Id</label>
+                    <input type="text" class="form-control" id="orderId" name="orderId" required disabled />
+                  </div>
+                  <div class="mb-3">
+                    <label for="formCustomerName" class="form-label">Customer Name</label>
+                    <input type="text" class="form-control" id="formCustomerName" name="formCustomerName" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="totalPrice" class="form-label">Total Price</label>
+                    <textarea class="form-control" id="totalPrice" name="totalPrice" rows="3" disabled></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveOrderChanges()">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Product List as a table -->
-      <section id="productListSection" style="display: none">
-        <h2>Product List</h2>
+      <section id="productListSection" style="display: none; text-align: center">
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-8">
+                      <h2>Product List</h2>
+                  </div>
+                  <div class="col-md-4 text-md-end">
+                      <!-- Create Product Button -->
+                      <button type="button" class="btn btn-outline-primary create-product-btn" onclick="openCreateProductModal()">Create Product</button>
+                  </div>
+              </div>
+          </div>
+
+
         <div class="table-responsive">
-          <table class="table table-bordered table-danger table-hover">
+          <table class="table table-bordered table-hover custom-table mx-auto">
             <thead>
               <tr>
                 <th>Product ID</th>
@@ -132,36 +207,70 @@
             <tbody id="productList"></tbody>
           </table>
         </div>
-      </section>
 
-        <!-- Add this modal in your HTML file -->
-        <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editOrderModalLabel">Edit Order</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Form fields for editing order details -->
-                        <form id="editOrderForm">
-                            <!-- Add form fields for editing order details, e.g., customerName, totalPrice, etc. -->
-                            <div class="mb-3">
-                                <label for="editCustomerName" class="form-label">Customer Name</label>
-                                <input type="text" class="form-control" id="editCustomerName" required>
-                            </div>
-                            <!-- Add other form fields as needed -->
-
-                            <button type="button" class="btn btn-primary" onclick="saveEditedOrder()">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
+        <div class="modal fade" id="eProductModal" tabindex="-1" aria-labelledby="eProductModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="eProductModalLabel">Edit Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="productForm">
+                  <div class="mb-3">
+                    <label for="productId" class="form-label">Id</label>
+                    <input type="text" class="form-control" id="productId" name="productId" required disabled />
+                  </div>
+                  <div class="mb-3">
+                    <label for="productName" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="productName" name="productName" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <textarea class="form-control" id="price" name="price" rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
+              </div>
             </div>
+          </div>
         </div>
-
+          <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="createProductModalLabel">Create Product</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form id="createProductForm">
+                              <div class="mb-3">
+                                  <label for="newProductName" class="form-label">Product Name</label>
+                                  <input type="text" class="form-control" id="newProductName" name="newProductName" required />
+                              </div>
+                              <div class="mb-3">
+                                  <label for="newProductPrice" class="form-label">Price</label>
+                                  <input type="text" class="form-control" id="newProductPrice" name="newProductPrice" required />
+                              </div>
+                          </form>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" onclick="createProduct()">Create Product</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
     </div>
 
+
+
     <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 

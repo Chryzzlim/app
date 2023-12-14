@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/products")
@@ -26,6 +29,18 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable Integer productId){
+        try {
+            Product product = productService.findById(productId);
+            return ResponseEntity.ok(product);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
     @PostMapping("/saveProduct")
     public ResponseEntity<String> saveProduct(@RequestBody Product product){
         try {
@@ -37,16 +52,19 @@ public class ProductController {
         }
     }
     @PutMapping("/updateProduct/{productId}")
-    public ResponseEntity<String> updateProduct(@PathVariable Integer productId, @RequestBody Product updatedProduct) {
+    public ResponseEntity<Map<String, String>> updateProduct(@PathVariable Integer productId, @RequestBody Product updatedProduct) {
         try {
             productService.updateProduct(productId, updatedProduct);
-            return ResponseEntity.ok("Product updated successfully");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Product updated successfully");
+            return ResponseEntity.ok(response);
         } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Product not found"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating product");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "Error updating product"));
         }
     }
+
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<String> deleteProductById(@PathVariable Integer productId) {
