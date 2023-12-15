@@ -41,6 +41,7 @@ public class OrderService {
 
         for (Integer productId : productIds) {
             Product product = productService.findById(productId);
+            product.setStatus("sold");
             if (product.getOrder() != null) {
                 // If the product is already associated with an order, skip it
                 System.out.println("Product " + productId + " is already associated with an order: " + product.getOrder().getId());
@@ -53,8 +54,11 @@ public class OrderService {
                 totalOrderPrice += product.getPrice();
             }
         }
+        if(order.getDeliveryOptions().equals("Meetup")){
+            order.setShippingFee(0);
+        }
         order.setProducts(products);
-        order.setTotalPrice(totalOrderPrice);
+        order.setTotalPrice(totalOrderPrice+order.getShippingFee());
         orderRepository.save(order);
     }
 
@@ -64,7 +68,12 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
 
+        List<Product> products=order.getProducts();
+        for(Product product:products){
+            product.setStatus("Available");
+        }
         order.setProducts(null);
+
                 orderRepository.delete(order);
     }
 
@@ -72,8 +81,8 @@ public class OrderService {
         return orderRepository.findByIsPaid(isPaid);
     }
 
-    public List<Order> getOrdersByMeetup(Boolean isMeetup) {
-        return orderRepository.findByIsMeetup(isMeetup);
+    public List<Order> getOrdersByDeliveryOptions(String deliveryOptions) {
+        return orderRepository.findByDeliveryOptions(deliveryOptions);
     }
 
     public List<Order> getOrdersByTotalPriceGreaterThan(Double totalPriceGreaterThan) {
@@ -89,9 +98,9 @@ public class OrderService {
             // Update the fields of the existing product with the values from the updated product
             existingOrder.setCustomerName(updatedOrder.getCustomerName());
             existingOrder.setTotalPrice(updatedOrder.getTotalPrice());
-            existingOrder.setIsMeetup(updatedOrder.getIsMeetup());
+            existingOrder.setDeliveryOptions(updatedOrder.getDeliveryOptions());
+            existingOrder.setShippingFee(updatedOrder.getShippingFee());
             existingOrder.setIsPaid(updatedOrder.getIsPaid());
-            existingOrder.setCustomerName(updatedOrder.getCustomerName());
 
             // Save the updated product
             orderRepository.save(existingOrder);

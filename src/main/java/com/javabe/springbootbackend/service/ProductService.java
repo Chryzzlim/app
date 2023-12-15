@@ -27,6 +27,7 @@ public class ProductService {
     }
 
     public void saveProduct(Product product){
+        product.setStatus("Available");
         productRepository.save(product);
     }
 
@@ -41,11 +42,15 @@ public class ProductService {
 
         // Disassociate the product from any order before deletion (if necessary)
         if (product.getOrder() != null) {
+            product.getOrder().setTotalPrice(product.getOrder().getTotalPrice()-product.getPrice());
             product.getOrder().getProducts().remove(product);
             product.setOrder(null);
         }
 
+
+
         productRepository.delete(product);
+
     }
 
 

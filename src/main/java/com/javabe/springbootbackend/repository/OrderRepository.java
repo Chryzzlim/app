@@ -8,7 +8,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByIsPaid(Boolean isPaid);
 
-    List<Order> findByIsMeetup(Boolean isMeetup);
+    List<Order> findByDeliveryOptions(String deliveryOptions);
 
     List<Order> findByTotalPriceGreaterThan(Double totalPriceGreaterThan);
 }

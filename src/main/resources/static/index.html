@@ -32,6 +32,8 @@
       background-color: #efc3ca;
       border: 2px solid #957dad;
       cursor: pointer;
+      border-collapse: separate;
+      border-radius: 6px;
     }
 
     .custom-table th,
@@ -47,18 +49,37 @@
     .custom-table thead th {
       background-color: #efc3ca;
     }
-        .create-product-btn {
-    margin-bottom: 20px; /* Adjust the margin to control the space between the button and the table */
-    font-size: 18px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease-in-out;
-  }
 
-  .create-product-btn:hover {
-    background-color: #007bff; /* Change the color on hover to make it stand out */
-    color: #fff; /* Adjust text color for better visibility on hover */
-  }
+    .create-product-btn {
+      margin-bottom: 20px; /* Adjust the margin to control the space between the button and the table */
+      font-size: 18px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .create-product-btn:hover {
+      background-color: #007bff; /* Change the color on hover to make it stand out */
+      color: #fff; /* Adjust text color for better visibility on hover */
+    }
+
+    .btn-primary,
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:visited {
+      background-color: #efc3ca !important;
+      border-color: #957dad;
+    }
+    .btn-outline-secondary,
+    .btn-outline-secondary:active,
+    .btn-outline-secondary:visited {
+      background-color: #efc3ca !important;
+      border-color: #957dad !important;
+    }
+    .btn-outline-secondary:hover {
+      background-color: #f097a6 !important;
+      border-color: #957dad !important;
+    }
   </style>
   <body>
     <!--Add Navigation Bar-->
@@ -70,11 +91,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
+            <!--            <li class="nav-item">-->
+            <!--              <a class="nav-link" aria-current="page" href="#" onclick="navigateTo('createOrderSection')">Create Order</a>-->
+            <!--            </li>-->
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="#" onclick="navigateTo('createOrderSection')">Create Order</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" onclick="navigateTo('orderListSection')">Order List</a>
+              <a class="nav-link" aria-current="page" href="#" onclick="navigateTo('orderListSection')">Order List</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#" onclick="navigateTo('productListSection')">Product List</a>
@@ -85,7 +106,8 @@
     </nav>
     <div class="container mt-3">
       <!-- Form to create a new order -->
-      <section id="createOrderSection" class="mt-4">
+      <!-- <section id="createOrderSection" class="mt-4">
+          <div class="rounded border p-3">
         <form id="createOrderForm">
           <div class="input-group mb-3">
             <span class="input-group-text" id="addon-wrapping" style="background-color: #efc3ca"
@@ -101,14 +123,14 @@
 
           <div class="mb-3">
             <label for="productCheckboxList" class="form-label">Products</label>
-            <div class="row" id="productCheckboxList">
-              <!-- Product cards will be dynamically added here -->
-            </div>
+            <div class="row" id="productCheckboxList"> -->
+      <!-- Product cards will be dynamically added here -->
+      <!-- </div>
           </div>
 
           <div class="form-check mb-3">
-            <input type="checkbox" class="form-check-input" id="isMeetup" />
-            <label class="form-check-label" for="isMeetup">Meetup</label>
+            <input type="checkbox" class="form-check-input" id="deliveryOptions" />
+            <label class="form-check-label" for="deliveryOptions">Meetup</label>
           </div>
 
           <div class="form-check mb-3">
@@ -124,19 +146,30 @@
             Create Order
           </button>
         </form>
-      </section>
+          </div>
+      </section> -->
 
       <!-- Order List as a table -->
-      <section id="orderListSection" style="display: none; text-align: center">
-        <h2>Order List</h2>
-        <div class="table-responsive">
+      <section id="orderListSection" style="display: none">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8">
+              <h2>Order List</h2>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <!-- Create Order Button -->
+              <button type="button" class="btn btn-outline-primary create-product-btn" onclick="openCreateOrderModal()">Create Order</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive" style="text-align: center">
           <table class="table table-bordered table-hover custom-table mx-auto">
             <thead>
               <tr>
                 <th>Order ID</th>
                 <th>Customer Name</th>
                 <th>Total Price</th>
-                <th>Meetup</th>
+                <th>Delivery Options</th>
                 <th>Paid</th>
                 <th>Products</th>
                 <th>Action</th>
@@ -147,7 +180,7 @@
         </div>
 
         <div class="modal fade" id="eOrderModal" tabindex="-1" aria-labelledby="eOrderModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-dialog modal-xl">
             <div class="modal-content">
               <div class="modal-header">
                 <h1 class="modal-title fs-5" id="eOrderModalLabel">Edit Order</h1>
@@ -167,8 +200,39 @@
                     <label for="totalPrice" class="form-label">Total Price</label>
                     <textarea class="form-control" id="totalPrice" name="totalPrice" rows="3" disabled></textarea>
                   </div>
+                  <div class="mb-3">
+                    <label for="orderProductsList" class="form-label">Products</label>
+                    <div id="orderProductsList"></div>
+                  </div>
                 </form>
               </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <div class="btn-group">
+                                <select class="btn btn-primary dropdown-toggle" id="formDeliveryOptions" name="formDeliveryOptions">
+                                    <ul class="dropdown-menu">
+                                        <option value="Meetup">Meetup</option>
+                                        <option value="Shipping">Shipping</option>
+                                    </ul>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <div class="btn-group">
+                                <select class="btn btn-primary dropdown-toggle" id="formIsPaid" name="formIsPaid">
+                                    <ul class="dropdown-menu">
+                                        <option value=true>Paid</option>
+                                        <option value=false>Unpaid</option>
+                                    </ul>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="saveOrderChanges()">Save changes</button>
@@ -176,24 +240,94 @@
             </div>
           </div>
         </div>
+
+        <div class="modal fade" id="createOrderModal" tabindex="-1" aria-labelledby="createOrderModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createOrderModalLabel">Create Order</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="createOrderForm">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="addon-wrapping" style="background-color: #efc3ca"
+                      ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#957DAD" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" /></svg
+                    ></span>
+                    <div class="form-floating">
+                      <input type="text" style="text-transform: capitalize" class="form-control" placeholder="Customer Name" id="customerName" required />
+                      <label for="customerName">Customer Name</label>
+                    </div>
+                  </div>
+                                    <div class="mb-3">
+                    <label for="productCheckboxList" class="form-label">Products</label>
+                    <div class="row" id="productCheckboxList">
+                      <!-- Product cards will be dynamically added here -->
+                    </div>
+                  </div>
+                </form>
+              </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <div class="btn-group">
+                                <select class="btn btn-primary dropdown-toggle" id="deliveryOptions" name="deliveryOptions">
+                                    <ul class="dropdown-menu">
+                                        <option value="Meetup">Meetup</option>
+                                        <option value="Shipping">Shipping</option>
+                                    </ul>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <div class="btn-group">
+                                <select class="btn btn-primary dropdown-toggle" id="isPaid" name="isPaid">
+                                    <ul class="dropdown-menu">
+                                        <option value=true>Paid</option>
+                                        <option value=false>Unpaid</option>
+                                    </ul>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-success" onclick="createOrder()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z" />
+                  </svg>
+                  Create Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Product List as a table -->
-      <section id="productListSection" style="display: none; text-align: center">
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-8">
-                      <h2>Product List</h2>
-                  </div>
-                  <div class="col-md-4 text-md-end">
-                      <!-- Create Product Button -->
-                      <button type="button" class="btn btn-outline-primary create-product-btn" onclick="openCreateProductModal()">Create Product</button>
-                  </div>
-              </div>
+      <section id="productListSection" style="display: none">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8">
+              <h2>Product List</h2>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <!-- Create Product Button -->
+              <button type="button" class="btn btn-outline-primary create-product-btn" onclick="openCreateProductModal()">Create Product</button>
+            </div>
           </div>
+        </div>
 
-
-        <div class="table-responsive">
+        <div class="table-responsive" style="text-align: center">
           <table class="table table-bordered table-hover custom-table mx-auto">
             <thead>
               <tr>
@@ -201,6 +335,7 @@
                 <th>Name</th>
                 <th>Price</th>
                 <th>Ordered By</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -238,36 +373,34 @@
             </div>
           </div>
         </div>
-          <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h1 class="modal-title fs-5" id="createProductModalLabel">Create Product</h1>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                          <form id="createProductForm">
-                              <div class="mb-3">
-                                  <label for="newProductName" class="form-label">Product Name</label>
-                                  <input type="text" class="form-control" id="newProductName" name="newProductName" required />
-                              </div>
-                              <div class="mb-3">
-                                  <label for="newProductPrice" class="form-label">Price</label>
-                                  <input type="text" class="form-control" id="newProductPrice" name="newProductPrice" required />
-                              </div>
-                          </form>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="button" class="btn btn-primary" onclick="createProduct()">Create Product</button>
-                      </div>
-                  </div>
+        <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createProductModalLabel">Create Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
+              <div class="modal-body">
+                <form id="createProductForm">
+                  <div class="mb-3">
+                    <label for="newProductName" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="newProductName" name="newProductName" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="newProductPrice" class="form-label">Price</label>
+                    <input type="text" class="form-control" id="newProductPrice" name="newProductPrice" required />
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createProduct()">Create Product</button>
+              </div>
+            </div>
           </div>
+        </div>
       </section>
     </div>
-
-
 
     <!-- Add Bootstrap JS and Popper.js scripts -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

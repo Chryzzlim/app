@@ -2,9 +2,7 @@ package com.javabe.springbootbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -14,6 +12,8 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "orders")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
 
     @Id
@@ -32,32 +32,22 @@ public class Order {
 
 
     private boolean isPaid;
-    private boolean isMeetup;
+
+    private String deliveryOptions;
+
+    private double shippingFee;
+
 
     public void setIsPaid(boolean paid) {
         isPaid = paid;
     }
 
-    public void setIsMeetup(boolean meetup) {
-        isMeetup = meetup;
-    }
 
     public boolean getIsPaid() {
         return isPaid;
     }
 
-    public boolean getIsMeetup() {
-        return isMeetup;
-    }
 
-    public Order() {
-    }
 
-    public Order(int id, String customerName, long totalPrice, boolean isPaid, boolean isMeetup) {
-        this.id = id;
-        this.customerName = customerName;
-        this.totalPrice = totalPrice;
-        this.isPaid = isPaid;
-        this.isMeetup = isMeetup;
-    }
+
 }

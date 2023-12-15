@@ -82,13 +82,13 @@ public class OrderController {
 
 
     @GetMapping("/filter")
-    public ResponseEntity<List<Order>> getFilteredOrders(@RequestParam(required = false) Boolean isPaid, @RequestParam(required = false) Boolean isMeetup) {
+    public ResponseEntity<List<Order>> getFilteredOrders(@RequestParam(required = false) Boolean isPaid, @RequestParam(required = false) String deliveryOptions) {
         // Check if either isPaid or isMeetup is specified
         if (isPaid != null) {
             List<Order> filteredOrders = orderService.getOrdersByPaid(isPaid);
             return ResponseEntity.ok(filteredOrders);
-        } else if (isMeetup != null) {
-            List<Order> filteredOrders = orderService.getOrdersByMeetup(isMeetup);
+        } else if (deliveryOptions != null) {
+            List<Order> filteredOrders = orderService.getOrdersByDeliveryOptions(deliveryOptions);
             return ResponseEntity.ok(filteredOrders);
         } else {
             // If neither is specified, return all orders
